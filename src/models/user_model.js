@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const schema = new mongoose.Schema({
     name: { type: String, require: [true, 'name is required'], trim: true },
-    phoneNumber: { type: String, require: [true, 'phoneNumber is required'], trim: true, unique: true },
+    phoneNumber: { type: String, trim: true, unique: true },
     facebookId: { type: String, trim: true, unique: true },
     googleId: { type: String, trim: true },
     birthDay: { type: Date, require: true },

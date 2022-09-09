@@ -26,6 +26,8 @@ module.exports.validatePhoneNumber = async (phoneNumber) => {
     ); 
 }
 
+
+
 // module.exports.authorized = async (email, token,) => {
 //     const user = await UserModel.findOne({email: email, accessToken: token});
 //     if (user == null) throw Error('ivalid_user');
