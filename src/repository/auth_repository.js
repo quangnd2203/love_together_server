@@ -1,21 +1,21 @@
-// // const sqlConnection = require('../configs/sql_connection');
-// const utils = require('../utils/utils');
-// const NetworkResponse = require('../models/network_response');
-// const UserModel = require('../models/user_model');
+const NetworkResponse = require('../models/network_response');
+const UserModel = require('../models/user_model');
 
-// module.exports.login = async (email, password, fcmToken, accountType = 'normal') => {
-//     const accessToken = utils.generateJWT(email);
-//     const user = await UserModel.login(email, password, accountType, accessToken);
-//     UserModel.updateFcmToken(user._id, fcmToken);
-//     return new NetworkResponse(
-//         1,
-//         null,
-//         {
-//             user: UserModel.fromJson(user),
-//             accessToken: user.accessToken,
-//         },
-//     );
-// }
+const utils = require('../utils/utils');
+
+module.exports.register = async (name, phoneNumber, birthDay, gender, avatar, fcmToken) => {
+    const accessToken = utils.generateJWT(phoneNumber);
+    const user = await UserModel.register(name, phoneNumber, birthDay, gender, avatar, accessToken);
+    UserModel.updateFcmToken(user._id, fcmToken);
+    return new NetworkResponse(
+        1,
+        null,
+        {
+            user: UserModel.fromJson(user),
+            accessToken: user.accessToken,
+        },
+    );
+}
 
 // module.exports.authorized = async (email, token,) => {
 //     const user = await UserModel.findOne({email: email, accessToken: token});

@@ -1,10 +1,13 @@
 const express = require('express');
+const fileUpload = require('express-fileupload');
 const cors = require('cors');
 const routers = require('../routes/routes');
 const apiService = express();
 
-apiService.use(express.json());
-apiService.use(express.urlencoded({ extended: true }));
+apiService.use(fileUpload({
+    useTempFiles: true,
+}));
+
 apiService.use(cors());
 apiService.options('*', cors());
 apiService.use('/api', routers);

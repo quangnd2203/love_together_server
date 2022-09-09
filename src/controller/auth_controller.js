@@ -1,9 +1,28 @@
-// const NetworkResponse = require('../models/network_response');
-// const UserModel = require('../models/user_model');
-// const authRepository = require('../repositories/auth_repository');
-// const socialRepository = require('../repositories/social_repository');
-// const utils = require('../utils/utils');
-// const { validationResult } = require('express-validator');
+const { validationResult } = require('express-validator');
+const NetworkResponse = require('../models/network_response');
+const authRepository = require('../repository/auth_repository');
+
+module.exports.register = async (request, response) => {
+    var networkResponse;
+    try{
+        const errors = validationResult(request);
+        if (!errors.isEmpty()) throw Error(errors.array()[0].msg);
+
+        networkResponse = await authRepository.register(
+            request.body.name, 
+            request.body.phoneNumber, 
+            request.body.birthDay, 
+            request.body.gender, 
+            request.body.avatar, 
+            request.body.fcmToken,
+        );
+
+    } catch(e) {
+        console.log(e);
+        networkResponse = NetworkResponse.fromErrors(e.message || 'login_invalid');
+    }
+    response.send(networkResponse);
+}
 
 // module.exports.loginNormal = async (request) => {
 //     try {
