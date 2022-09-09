@@ -3,9 +3,9 @@ const UserModel = require('../models/user_model');
 
 const utils = require('../utils/utils');
 
-module.exports.register = async (name, phoneNumber, birthDay, gender, avatar, fcmToken) => {
+module.exports.register = async (name, phoneNumber, facebookId, googleId, birthDay, gender, avatar, fcmToken) => {
     const accessToken = utils.generateJWT(phoneNumber);
-    const user = await UserModel.register(name, phoneNumber, birthDay, gender, avatar, accessToken);
+    const user = await UserModel.register(name, phoneNumber, facebookId, googleId, birthDay, gender, avatar, accessToken);
     UserModel.updateFcmToken(user._id, fcmToken);
     return new NetworkResponse(
         1,
@@ -15,6 +15,15 @@ module.exports.register = async (name, phoneNumber, birthDay, gender, avatar, fc
             accessToken: user.accessToken,
         },
     );
+}
+
+module.exports.validatePhoneNumber = async (phoneNumber) => {
+    const isUnused = await UserModel.validatePhoneNumber(phoneNumber);
+    return new NetworkResponse(
+        1,
+        isUnused ? 'success' : 'phoneNumber_used',
+        isUnused,
+    ); 
 }
 
 // module.exports.authorized = async (email, token,) => {

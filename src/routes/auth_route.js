@@ -9,6 +9,8 @@ const firebaseService = require('../services/firebase_service');
 
 router.post('/register', authValidation.registerValidate(), imageUploadMiddleware, authController.register);
 
+router.post('/validatePhone', authValidation.validatePhoneNumber(), authController.validatePhoneNumber);
+
 // router.post('/loginNormal', authValidation.loginValidate(), (request, response) => {
 //     authController.loginNormal(request).then((value) => {
 //         response.send(value);

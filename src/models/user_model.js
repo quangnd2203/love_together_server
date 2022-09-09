@@ -32,15 +32,18 @@ const schema = new mongoose.Schema({
             }
         },
 
-        async register(name, phoneNumber, birthDay, gender, avatar, accessToken) {
+        async register(name, phoneNumber, facebookId, googleId, birthDay, gender, avatar, accessToken) {
             try {
                 const user = await this.create({
                     name: name,
                     phoneNumber: phoneNumber,
+                    facebookId: facebookId || null,
+                    googleId: googleId || null,
                     birthDay: birthDay,
                     gender: gender,
                     avatar: avatar,
                     accessToken: accessToken,
+                    fcmToken: null,
                     isNew: 1,
                 });
                 return user;
@@ -48,6 +51,14 @@ const schema = new mongoose.Schema({
                 console.log(err);
                 throw Error('user already exists');
             }
+        },
+
+        async validatePhoneNumber(phoneNumber){
+            const user = await this.findOne({
+                phoneNumber: phoneNumber,
+            });
+            if(user == null) return false;
+            return true;
         },
 
         async updateFcmToken(_id, fcmToken) {

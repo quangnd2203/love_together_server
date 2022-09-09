@@ -8,6 +8,10 @@ module.exports.registerValidate = () => [
     validations.validateRequired('fcmToken'),
 ];
 
+module.exports.validatePhoneNumber = () => [
+    validations.validatePhone('phoneNumber'),
+]
+
 // module.exports.registerAccountValidate = () => [
 //     validations.validateName(),
 //     validations.validateEmail(),

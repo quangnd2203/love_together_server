@@ -3,14 +3,16 @@ const NetworkResponse = require('../models/network_response');
 const authRepository = require('../repository/auth_repository');
 
 module.exports.register = async (request, response) => {
-    var networkResponse;
+    let networkResponse;
     try{
         const errors = validationResult(request);
         if (!errors.isEmpty()) throw Error(errors.array()[0].msg);
 
         networkResponse = await authRepository.register(
             request.body.name, 
-            request.body.phoneNumber, 
+            request.body.phoneNumber,
+            request.body.facebookId,
+            request.body.googleId,
             request.body.birthDay, 
             request.body.gender, 
             request.body.avatar, 
@@ -22,6 +24,21 @@ module.exports.register = async (request, response) => {
         networkResponse = NetworkResponse.fromErrors(e.message || 'login_invalid');
     }
     response.send(networkResponse);
+}
+
+module.exports.validatePhoneNumber = async (request, response) => {
+    let networkResponse;
+    try{
+        const errors = validationResult(request);
+        if (!errors.isEmpty()) throw Error(errors.array()[0].msg);
+
+        networkResponse = await authRepository.validatePhoneNumber(request.body.phoneNumber);
+        
+    } catch(e) {
+        console.log(e);
+        networkResponse = NetworkResponse.fromErrors(e.message || 'phone_invalid');
+    }
+    response.send(networkResponse); 
 }
 
 // module.exports.loginNormal = async (request) => {
