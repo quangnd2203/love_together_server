@@ -11,8 +11,6 @@ module.exports.register = async (request, response) => {
         networkResponse = await authRepository.register(
             request.body.name, 
             request.body.phoneNumber,
-            request.body.facebookId,
-            request.body.googleId,
             request.body.birthDay, 
             request.body.gender, 
             request.body.avatar, 

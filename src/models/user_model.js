@@ -1,10 +1,11 @@
+const { google } = require("googleapis");
 const mongoose = require("mongoose");
 
 const schema = new mongoose.Schema({
     name: { type: String, require: [true, 'name is required'], trim: true },
     phoneNumber: { type: String, trim: true, unique: true },
-    facebookId: { type: String, trim: true, unique: true },
-    googleId: { type: String, trim: true },
+    facebook: { email: String, socialId: String },
+    google: { email: String, socialId: String },
     birthDay: { type: Date, require: true },
     gender: { type: Number, require: true },
     avatar: { type: String, trim: true, require: true },
@@ -20,8 +21,8 @@ const schema = new mongoose.Schema({
                 uid: json._id,
                 name: json.name,
                 phoneNumber: json.phoneNumber,
-                facebookId: json.facebookId,
-                googleId: json.googleId,
+                facebook: json.facebook,
+                google: json.google,
                 birthDay: json.birthDay,
                 gender: json.gender,
                 avatar: json.avatar,
@@ -32,13 +33,13 @@ const schema = new mongoose.Schema({
             }
         },
 
-        async register(name, phoneNumber, facebookId, googleId, birthDay, gender, avatar, accessToken) {
+        async register(name, phoneNumber, facebook, google, birthDay, gender, avatar, accessToken) {
             try {
                 const user = await this.create({
                     name: name,
                     phoneNumber: phoneNumber,
-                    facebookId: facebookId || null,
-                    googleId: googleId || null,
+                    facebook: facebook,
+                    google: google,
                     birthDay: birthDay,
                     gender: gender,
                     avatar: avatar,

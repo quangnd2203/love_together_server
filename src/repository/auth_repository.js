@@ -3,9 +3,9 @@ const UserModel = require('../models/user_model');
 
 const utils = require('../utils/utils');
 
-module.exports.register = async (name, phoneNumber, facebookId, googleId, birthDay, gender, avatar, fcmToken) => {
+module.exports.register = async (name, phoneNumber, facebook, google, birthDay, gender, avatar, fcmToken) => {
     const accessToken = utils.generateJWT(phoneNumber);
-    const user = await UserModel.register(name, phoneNumber, facebookId, googleId, birthDay, gender, avatar, accessToken);
+    const user = await UserModel.register(name, phoneNumber, facebook, google, birthDay, gender, avatar, accessToken);
     UserModel.updateFcmToken(user._id, fcmToken);
     return new NetworkResponse(
         1,

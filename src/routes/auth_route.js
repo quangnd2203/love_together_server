@@ -7,7 +7,7 @@ const authValidation = require('../validations/authentication_validation');
 
 const firebaseService = require('../services/firebase_service');
 
-router.post('/register', authValidation.registerValidate(), imageUploadMiddleware, authController.register);
+router.post('/loginPhone', authValidation.registerValidate(), imageUploadMiddleware, authController.register);
 
 router.post('/validatePhone', authValidation.validatePhoneNumber(), authController.validatePhoneNumber);
 
@@ -40,8 +40,7 @@ router.get('/verifyIdToken', (request, response) => {
     //     response.send(value);
     // });
     firebaseService.verifyIdToken(request.query.idToken).then((value) => {
-        console.log(request.query.idToken);
-        response.send(Object.entries(value.firebase.identities['facebook.com']));
+        response.send(value.firebase.identities);
     });
 });
 
