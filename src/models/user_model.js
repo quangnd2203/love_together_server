@@ -37,12 +37,12 @@ const schema = new mongoose.Schema({
             try {
                 const user = await this.create({
                     name: name,
-                    phoneNumber: phoneNumber,
-                    facebook: facebook,
-                    google: google,
-                    birthDay: birthDay,
-                    gender: gender,
-                    avatar: avatar,
+                    phoneNumber: phoneNumber || null,
+                    facebook: facebook || null,
+                    google: google || null,
+                    birthDay: birthDay || null,
+                    gender: gender || 1,
+                    avatar: null,
                     accessToken: accessToken,
                     fcmToken: null,
                     isNew: 1,
@@ -52,6 +52,19 @@ const schema = new mongoose.Schema({
                 console.log(err);
                 throw Error('user already exists');
             }
+        },
+
+        async login(phoneNumber, facebook, google) {
+            let user;
+            if(phoneNumber !== null)
+                user = await this.findOneAndUpdate({phoneNumber: phoneNumber}, {accessToken: accessToken}, {new: true});
+            else if (facebook !== null)
+                user = await this.findOneAndUpdate({facebook: facebook}, {accessToken: accessToken}, {new: true});
+            else if(google !== null)
+                user = await this.findOneAndUpdate({google: google}, {accessToken: accessToken}, {new: true});
+            if(user === null) 
+                throw Error('wrong_infomation');
+            return user;
         },
 
         async validatePhoneNumber(phoneNumber){

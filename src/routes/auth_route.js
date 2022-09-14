@@ -5,9 +5,11 @@ const router = express.Router();
 const {authorizedServer} = require('../middlewares/authorize_middleware');
 const authValidation = require('../validations/authentication_validation');
 
-const firebaseService = require('../services/firebase_service');
+const socialRepository = require('../repository/social_repository');
 
-router.post('/loginPhone', authValidation.registerValidate(), imageUploadMiddleware, authController.register);
+router.post('/register', authValidation.registerValidate(), imageUploadMiddleware, authController.registerNormal);
+
+router.post('/login', authValidation.validatePhoneNumber(), authController.loginNormal);
 
 router.post('/validatePhone', authValidation.validatePhoneNumber(), authController.validatePhoneNumber);
 
@@ -36,11 +38,8 @@ router.post('/validatePhone', authValidation.validatePhoneNumber(), authControll
 // });
 
 router.get('/verifyIdToken', (request, response) => {
-    // authController.authorized(request.user, request.token).then((value) => {
-    //     response.send(value);
-    // });
-    firebaseService.verifyIdToken(request.query.idToken).then((value) => {
-        response.send(value.firebase.identities);
+    socialRepository.getSocialInfo(request.query.idToken, request.query.socialType).then((value) => {
+        response.send(value);
     });
 });
 

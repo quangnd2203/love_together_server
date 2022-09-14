@@ -1,23 +1,65 @@
 const { validationResult } = require('express-validator');
 const NetworkResponse = require('../models/network_response');
 const authRepository = require('../repository/auth_repository');
+const socialRepository = require('../repository/social_repository');
+const utils = require('../utils/utils');
 
-module.exports.register = async (request, response) => {
+function generateJWT(data) {
+    let payload;
+    if (data.phoneNumber !== null)
+        payload = data.phoneNumber;
+    else if (data.facebook !== null) {
+        payload = data.facebook;
+        payload.type = 'facebook';
+    } else if (data.google !== null) {
+        payload = data.google;
+        payload.type = 'google';
+    }
+    return utils.generateJWT(payload);
+}
+
+module.exports.registerNormal = async (request, response) => {
     let networkResponse;
-    try{
+    try {
         const errors = validationResult(request);
         if (!errors.isEmpty()) throw Error(errors.array()[0].msg);
 
-        networkResponse = await authRepository.register(
-            request.body.name, 
-            request.body.phoneNumber,
-            request.body.birthDay, 
-            request.body.gender, 
-            request.body.avatar, 
-            request.body.fcmToken,
-        );
+        const accessToken = generateJWT({ phoneNumber: request.phoneNumber });
 
-    } catch(e) {
+        networkResponse = await authRepository.register(
+            request.body.name,
+            request.body.phoneNumber,
+            null,
+            null,
+            request.body.birthDay,
+            request.body.gender,
+            request.body.avatar,
+            request.body.fcmToken,
+            accessToken,
+        );
+    } catch (e) {
+        console.log(e);
+        networkResponse = NetworkResponse.fromErrors(e.message || 'register_invalid');
+    }
+    response.send(networkResponse);
+}
+
+module.exports.loginNormal = async (request, response) => {
+    let networkResponse;
+    try {
+        const errors = validationResult(request);
+        if (!errors.isEmpty()) throw Error(errors.array()[0].msg);
+
+        const accessToken = generateJWT({ phoneNumber: request.phoneNumber });
+
+        networkResponse = await authRepository.login(
+            request.body.phoneNumber,
+            null,
+            null,
+            request.body.fcmToken,
+            accessToken,
+        );
+    } catch (e) {
         console.log(e);
         networkResponse = NetworkResponse.fromErrors(e.message || 'login_invalid');
     }
@@ -26,17 +68,45 @@ module.exports.register = async (request, response) => {
 
 module.exports.validatePhoneNumber = async (request, response) => {
     let networkResponse;
-    try{
+    try {
         const errors = validationResult(request);
         if (!errors.isEmpty()) throw Error(errors.array()[0].msg);
 
         networkResponse = await authRepository.validatePhoneNumber(request.body.phoneNumber);
-        
-    } catch(e) {
+
+    } catch (e) {
         console.log(e);
         networkResponse = NetworkResponse.fromErrors(e.message || 'phone_invalid');
     }
-    response.send(networkResponse); 
+    response.send(networkResponse);
+}
+
+module.exports.loginSocial = async (request, response) => {
+    try {
+        const errors = validationResult(request);
+        if (!errors.isEmpty()) throw Error(errors.array()[0].msg);
+
+        const socialUser = await socialRepository.getSocialInfo(
+            request.body.idToken,
+            request.body.socialType,
+        );
+
+        const networkResponse = await authRepository.loginSocial(
+            socialUser.name,
+            request.body.phoneNumber,
+            facebook,
+            google,
+            null,
+            null,
+            socialUser.avatar,
+            request.body.fcmToken,
+            accessToken,
+        );
+        return networkResponse;
+    } catch (e) {
+        // console.log(e);
+        // return NetworkResponse.fromErrors(e.message || 'cant_get_user');
+    }
 }
 
 // module.exports.loginNormal = async (request) => {
@@ -70,20 +140,7 @@ module.exports.validatePhoneNumber = async (request, response) => {
 //     }
 // }
 
-// module.exports.loginSocial = async (request) => {
-//     try {
-//         const errors = validationResult(request);
-//         if (!errors.isEmpty()) throw Error(errors.array()[0].msg);
 
-//         const body = request.body;
-//         const socialUser = await socialRepository.loginSocial(body.socialToken, body.accountType);
-//         const networkResponse = await authRepository.loginSocical(socialUser.name, socialUser.id.toString(), body.accountType, body.fcmToken);
-//         return networkResponse;
-//     } catch (e) {
-//         console.log(e);
-//         return NetworkResponse.fromErrors(e.message || 'cant_get_user');
-//     }
-// }
 
 // module.exports.authorized = async (user, token) => {
 //     return new NetworkResponse(

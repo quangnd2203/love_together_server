@@ -1,10 +1,7 @@
 const NetworkResponse = require('../models/network_response');
 const UserModel = require('../models/user_model');
 
-const utils = require('../utils/utils');
-
-module.exports.register = async (name, phoneNumber, facebook, google, birthDay, gender, avatar, fcmToken) => {
-    const accessToken = utils.generateJWT(phoneNumber);
+module.exports.register = async (name, phoneNumber, facebook, google, birthDay, gender, avatar, fcmToken, accessToken) => {
     const user = await UserModel.register(name, phoneNumber, facebook, google, birthDay, gender, avatar, accessToken);
     UserModel.updateFcmToken(user._id, fcmToken);
     return new NetworkResponse(
@@ -15,6 +12,29 @@ module.exports.register = async (name, phoneNumber, facebook, google, birthDay, 
             accessToken: user.accessToken,
         },
     );
+}
+
+module.exports.login = async (phoneNumber, facebook, google, fcmToken, accessToken) => {
+    const user = await UserModel.login(phoneNumber, facebook, google, accessToken);
+    UserModel.updateFcmToken(user._id, fcmToken);
+    return new NetworkResponse(
+        1,
+        null,
+        {
+            user: UserModel.fromJson(user),
+            accessToken: user.accessToken,
+        },
+    );
+}
+
+module.exports.loginSocial = async (name, phoneNumber, facebook, google, birthDay, gender, avatar, fcmToken, accessToken) => {
+    let networkResponse;
+    try{
+        networkResponse = await this.login(null, facebook, google, fcmToken, accessToken);
+    } catch (e){
+        networkResponse = await this.register(name, phoneNumber, facebook, google, birthDay, gender, avatar, fcmToken, accessToken);
+    }
+    return networkResponse;
 }
 
 module.exports.validatePhoneNumber = async (phoneNumber) => {

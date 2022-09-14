@@ -7,10 +7,6 @@ module.exports.initialized = () => {
 }
 
 module.exports.verifyIdToken = async (idToken) => {
-    try{
-        const data = await firebaseService.auth().verifyIdToken(idToken);
-        return data;
-    }catch(e){
-        return e;
-    }
+    const data = await firebaseService.auth().verifyIdToken(idToken);
+    return data;
 }
