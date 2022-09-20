@@ -33,7 +33,7 @@ module.exports.registerNormal = async (request, response) => {
             null,
             request.body.birthDay,
             request.body.gender,
-            request.body.avatar,
+            request.files.avatar,
             request.body.fcmToken,
             accessToken,
         );

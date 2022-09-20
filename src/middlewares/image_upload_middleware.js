@@ -1,4 +1,4 @@
-const fs = require('fs');
+// const fs = require('fs');
 const NetworkResponse = require('../models/network_response');
 
 module.exports = async function (request, response, next) {

@@ -10,9 +10,15 @@ apiService.use(fileUpload({
 
 apiService.use(cors());
 apiService.options('*', cors());
+
 apiService.use('/api', routers);
+
+
+apiService.use('/uploads', (request, response,) => {
+    response.sendFile(`/app${request.originalUrl}`);
+});
+
 apiService.use((req, res, next) => {
     next(new ApiError(httpStatus.NOT_FOUND, 'Not found'));
 });
-
 module.exports = apiService;

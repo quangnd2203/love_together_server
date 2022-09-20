@@ -1,5 +1,7 @@
 const crypto = require('crypto-js');
 const jwt = require('jsonwebtoken');
+const fs = require('fs');
+const appValues = require('../constants/app_values');
 
 module.exports.hashPassword = (password) => {
     return crypto.SHA512(password).toString();
@@ -30,5 +32,12 @@ module.exports.generateUUID = () => { // Public Domain/MIT
             d2 = Math.floor(d2/16);
         }
         return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+    });
+}
+module.exports.saveImage = (fileName, fileTemp) => {
+    const format = fileTemp.mimetype.split('/')[1];
+    fs.writeFileSync(appValues.mediaPath + `/${fileName}.${format}`, fs.readFileSync(fileTemp.tempFilePath));
+    fs.unlink(fileTemp.tempFilePath, (err) => {
+        if (err) throw err;
     });
 }

@@ -1,9 +1,11 @@
 const NetworkResponse = require('../models/network_response');
 const UserModel = require('../models/user_model');
+const utils = require('../utils/utils');
 
 module.exports.register = async (name, phoneNumber, facebook, google, birthDay, gender, avatar, fcmToken, accessToken) => {
     const user = await UserModel.register(name, phoneNumber, facebook, google, birthDay, gender, avatar, accessToken);
     UserModel.updateFcmToken(user._id, fcmToken);
+    utils.saveImage(`avatar/avatar_${user._id}`, avatar);
     return new NetworkResponse(
         1,
         null,
